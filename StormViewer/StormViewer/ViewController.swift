@@ -15,11 +15,16 @@ class ViewController: UITableViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         
+        title = "Image List"
+        navigationController?.navigationBar.prefersLargeTitles = true
+        
         let fileManager = FileManager.default
         let path = Bundle.main.resourcePath!
         pictures = try! fileManager.contentsOfDirectory(atPath: path).filter {
             $0.hasSuffix(".jpg")
         }
+        
+        pictures.sort()
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -30,6 +35,15 @@ class ViewController: UITableViewController {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Picture", for: indexPath)
         cell.textLabel?.text = pictures[indexPath.row]
         return cell
+    }
+    
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if let detailVC = storyboard?.instantiateViewController(withIdentifier: "Detail") as? DetailViewController {
+            detailVC.imageName = pictures[indexPath.row]
+            detailVC.currentImageNumber = indexPath.row + 1
+            detailVC.numberOfImages = pictures.count
+            self.navigationController?.pushViewController(detailVC, animated: true)
+        }
     }
 }
 
